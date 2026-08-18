@@ -1,0 +1,38 @@
+# ── Archivos de bloqueo y temporales de CAD ──────────────────────────────────
+# SolidWorks crea estos mientras un archivo está abierto; no son parte del diseño.
+~$*
+*.~*
+*.swp.*
+
+# Autodesk Inventor
+OldVersions/
+*.ipj.bak
+*.lck
+
+# ── Sistema operativo ────────────────────────────────────────────────────────
+Thumbs.db
+desktop.ini
+.DS_Store
+._*
+
+# ── Python (scripts de análisis en 12_Codigos_Graficas/) ─────────────────────
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# ── Logs de vuelo pesados ────────────────────────────────────────────────────
+# Los .BIN completos de Mission Planner superan el límite práctico de GitHub.
+# Se publican aparte; ver la sección "Datos que no están en este repositorio"
+# del README. Los CSV ligeros que respaldan las tablas del artículo SÍ se
+# versionan, por eso la excepción de abajo.
+*.BIN
+*.bin
+!Datos_Articulo/**/*.csv
+
+# ── Salidas regenerables ─────────────────────────────────────────────────────
+*.aux
+*.log
+*.out
+*.synctex.gz

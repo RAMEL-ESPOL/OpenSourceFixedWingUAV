@@ -1,86 +1,162 @@
-# Mission Planner & Integración Mecatrónica - Reno L250 UAV
+# Plataformas UAV de Ala Fija de Código Abierto — Reno L250 y prototipo de foam board
 
-Este repositorio contiene los archivos de software, diseño mecánico CAD 3D, planos de fabricación, parámetros del piloto automático y scripts de análisis de telemetría utilizados en el proyecto de titulación y artículo de investigación: **"Integración mecatrónica y validación de una plataforma UAV de ala fija de bajo costo basada en arquitectura abierta"** (ESPOL).
+Repositorio de respaldo del artículo:
 
-El enfoque de este repositorio está orientado a la plataforma comercial **Reno L250** convertida de combustión interna a propulsión eléctrica pura para investigación en vuelo autónomo.
+> **Integration and Validation of Open-Source Fixed-Wing UAV Platforms for Low-Cost Autonomous Flight Research**
+> S. Martinez, J. Veloz, J. Hurel, C. Tutiven, F. Yumbla
+> *IEEE Ecuador Technical Chapters Meeting (ETCM) 2026*
+
+y del proyecto de titulación **"Integración mecatrónica y validación de una plataforma UAV de ala fija de bajo costo basada en arquitectura abierta"** (ESPOL).
+
+Contiene el diseño mecánico CAD, los planos de fabricación, los parámetros del autopiloto, el código de análisis de telemetría y los datos que respaldan las tablas y figuras del artículo.
 
 ---
 
-## 🔗 Repositorio de Simulación (Gemelo Digital)
-Para complementar las pruebas en hardware físico con simulaciones de alta fidelidad, se ha desarrollado un Gemelo Digital en **NVIDIA Isaac Sim** empleando **Pegasus Simulator**. 
-* El repositorio con el script de simulación de la planta aerodinámica y el entorno 3D está disponible en: [isaac-uav (GitHub)](https://github.com/stevenijm777/isaac-uav)
-* Ruta local para contexto: `C:\Users\steve\Documents\GitRepositories\isaac-uav`
+## Dónde está cada cosa del artículo
+
+| Sección / elemento del artículo | Carpeta |
+|---|---|
+| **Sec. II** — Selección de plataformas, componentes y costos (Tablas I–III) | [`Calculos/`](Calculos/) |
+| **Sec. II** — CAD de ambas plataformas (Fig. 1) | [`Modelo3D/`](Modelo3D/) |
+| **Sec. II** — Integración de aviónica (Fig. 3) | [`Guia_Mission_Planner.pdf`](Guia_Mission_Planner.pdf) |
+| **Sec. III** — Banco de pruebas estático (Fig. 4) | [`Modelo3D/`](Modelo3D/) |
+| **Sec. III** — Latencia RCIN/RCOUT y vibraciones FFT (Figs. 6 y 7) | [`12_Codigos_Graficas/`](12_Codigos_Graficas/) |
+| **Sec. IV** — Geometría del prototipo de foam board (ver aviso abajo) | [`Modelo3D/Esamble_nuevo_cfd_agosto/`](Modelo3D/Esamble_nuevo_cfd_agosto/) |
+| **Sec. V** — Parámetros del autopiloto | [`Parametros/`](Parametros/) |
+| **Sec. V** — Órbita de *Loiter* sostenida (Tabla V, Fig. 8) | [`Datos_Articulo/`](Datos_Articulo/) |
+| **Sec. V** — Gemelo digital en Isaac Sim (Fig. 9b) | repositorio aparte, ver abajo |
 
 ---
 
-## 📂 Estructura del Repositorio
+## Estructura
 
-El repositorio se organiza de la siguiente manera:
-
-```text
-MissionPlanerRenoL250/
-├── 12_Codigos_Graficas/   # Jupyter Notebook y scripts de Python para procesamiento de logs .BIN
-├── Calculos/              # Hoja de cálculo verificada de diseño dinámico e importación
-├── Manual_RENOL250/       # Escaneos del manual físico de ensamblaje del Reno L250
-├── Modelo3D/              # Archivos CAD Autodesk Inventor (.ipt, .iam), STLs impresiones y planos PDF
-├── Parametros/            # Archivos de respaldo de parámetros (.param) de ArduPilot
-├── Guia_Mission_Planner.pdf # Guía de integración de software y hardware
-└── .gitignore             # Configuración de exclusión para logs pesados y temporales CAD
+```
+.
+├── Calculos/                  Hoja de cálculo de MTOW, carga alar, T/W,
+│                              autonomía y desglose de costos de importación
+├── 12_Codigos_Graficas/       Análisis post-vuelo de telemetría .BIN
+│   ├── processVibe.py         Extrae el mensaje VIBE y grafica vibraciones
+│   └── missionPlanning.ipynb  Compara RCIN vs RCOUT (latencia de actuadores)
+├── Modelo3D/
+│   ├── CAD_SolidWorks/
+│   │   └── Avion_White/       Geometría de referencia del foam board
+│   ├── Esamble_nuevo_cfd_agosto/  Ensamble reconstruido + CFD de agosto 2026
+│   │                              (NO es la geometría de la Tabla IV)
+│   ├── RenoL250/              Fuselaje comercial modelado en Inventor
+│   ├── STL_Impresion/         Mallas listas para impresión 3D
+│   └── Paracaidas/            Sistema de recuperación (trabajo de tesis;
+│                              no forma parte del artículo)
+├── Parametros/                Respaldos .param de ArduPilot
+└── Datos_Articulo/
+    ├── logs_isaac_sim/        CSV de las dos corridas de la Tabla V
+    └── scripts_mision/        Scripts de misión y de análisis
 ```
 
-### 1. `12_Codigos_Graficas/`
-Contiene la algoritmia para análisis post-vuelo de telemetría y vibraciones:
-* **`processVibe.py`**: Script en Python para extraer datos del mensaje `VIBE` del log de vuelo `.BIN` y generar gráficas de vibraciones en los ejes X, Y y Z en alta resolución bajo normas APA.
-* **`missionPlanning.ipynb`**: Jupyter Notebook interactivo que procesa la telemetría MAVLink para validar la respuesta de actuadores comparando las entradas del piloto (`RCIN`) frente a las salidas físicas de los servomotores (`RCOUT`) en los canales de guiñada, cabeceo, alabeo y acelerador.
-* **Gráficas PNG**: Resultados exportados que muestran la supresión de vibraciones y la validación de latencia cero en la cadena de control.
+### Aviso sobre la geometría del prototipo de foam board
 
-### 2. `Calculos/`
-* **`ANALISIS_COMPLETO_UAV.xlsx`**: Hoja de cálculo dinámica y verificada que consolida el análisis de pesos (MTOW) y estimación aerodinámica de los modelos Foam Board (Manual/Auto), Reno L250 y la variante de alta velocidad (2200KV). Permite calcular de manera automática:
-  * Velocidad de pérdida ($V_{stall}$) y carga alar ($WL$) basándose en el coeficiente de sustentación $C_{L_{max}}$ y área alar de diseño.
-  * Relación Empuje/Peso ($T/W$) y potencia requerida.
-  * Autonomía teórica y práctica (70% de reserva).
-  * Desglose completo de importación (FOB EE.UU. a Ecuador sumando aranceles, Fodinfa, fletes por peso y tasas de aduana).
+**El ensamble CAD que produjo la Tabla IV del artículo ya no está disponible.**
 
-### 3. `Manual_RENOL250/`
-* Recopilación de imágenes escaneadas de las instrucciones físicas originales del fuselaje comercial Reno L250. Esencial para conocer la distribución espacial del ala, estabilizadores, y las distancias de montaje recomendadas de fábrica.
+Lo que se publica aquí es una reconstrucción hecha a partir de las mismas
+dimensiones externas medidas (envergadura 1058.6 mm, cuerda 167.0/157.8 mm), en
+[`Modelo3D/Esamble_nuevo_cfd_agosto/`](Modelo3D/Esamble_nuevo_cfd_agosto/),
+junto con la geometría de referencia usada para reconstruirla, en
+[`Modelo3D/CAD_SolidWorks/Avion_White/`](Modelo3D/CAD_SolidWorks/Avion_White/).
 
-### 4. `Modelo3D/`
-* **`RenoL250/`**: Modelado 3D en Autodesk Inventor de la aeronave desglosado en ensambles (`.iam`) y partes (`.ipt`) de las alas, fuselaje principal (body), rudder, estabilizador vertical y tren de aterrizaje.
-* **`Soporte_Pixhawck/`** y **`MOTOR/`**: Planos CAD de los soportes amortiguados impresos en 3D para el controlador Pixhawk 2.4.8 y el acople de conversión al motor eléctrico KingVal 3548.
-* **`STL_Impresion/`**: Archivos `.stl` listos para laminación e impresión en 3D (PLA/PETG) de los soportes de servos, soportes del motor, llantas y trompa protectora.
-* **`Planos_PDF_estructura/`**: Planos bidimensionales detallados con acotaciones mecánicas para la fabricación física y de taller.
+Una corrida de verificación sobre la reconstrucción devuelve $C_L = 0.100$ y
+$C_D = 0.065$ frente a los 0.008 y 0.155 del estudio original, diferencia
+compatible con unos 2° de incidencia alar que la reconstrucción no reproduce.
+**Los coeficientes del gemelo digital y todos los resultados de simulación del
+artículo provienen del estudio original**, no de esta geometría. El detalle está
+en el README de esa carpeta.
 
-### 5. `Parametros/`
-* Archivos `.param` exportados desde Mission Planner. Incluyen la sintonización de lazos de control PID, límites operacionales de alabeo y cabeceo, configuración de canales PWM y calibración de sensores inerciales del UAV para ArduPilot.
+### Formatos CAD
+
+Las piezas se publican en formato **nativo** (`.SLDPRT`/`.SLDASM` de SolidWorks,
+`.ipt`/`.iam` de Inventor) y, donde estaba disponible, en **STEP** (`.stp`).
+
+Si vas a reproducir la geometría, usa el **STEP**: conserva las dimensiones
+exactas y lo abre cualquier CAD. Los **STL** de `STL_Impresion/` son mallas
+trianguladas — sirven para imprimir y para el visor 3D de GitHub, pero pierden
+la parametría y no son la fuente para tomar medidas.
 
 ---
 
-##  Requisitos e Instalación
+## Gemelo digital (Isaac Sim + Pegasus Simulator)
 
-Para ejecutar los scripts de procesamiento de telemetría, se requiere Python 3.8+ y las siguientes dependencias:
+El modelo de planta aerodinámica y el entorno de simulación viven en un
+repositorio aparte, porque son un *fork* de un proyecto de terceros con su
+propia licencia y linaje:
+
+**https://github.com/stevenijm777/isaac-uav**
+
+| Rama | Commit | Qué contiene |
+|---|---|---|
+| `legacy/paper-replication` | `edb7485` | La configuración con la que se produjeron los resultados del artículo. **Correr sin banderas reproduce lo publicado.** |
+| `experimental/modelo-nuevo` | `ad6fcf3` | Cada corrección del modelo expuesta como una bandera de línea de comandos independiente (`--cg`, `--inertia`, `--gear-shift`, `--thrust`, `--damping`), para poder aislar el efecto de cada una |
+
+El registro completo del diagnóstico —qué se midió, qué se corrigió y qué
+quedó sin explicar— está en `HALLAZGOS_SITL.md` dentro de ese repositorio.
+
+Para reproducir la órbita de la Tabla V:
 
 ```bash
-pip install pymavlink pandas matplotlib openpyxl
-```
+# Terminal 1 — Isaac Sim + ArduPilot SITL
+isaac_run examples/yoy_trainer/13_yoy_trainer_fixedwing.py --mode autonomous
 
-### Ejecutar el análisis de vibraciones:
-1. Copia tu archivo de log `.BIN` descargado de la tarjeta MicroSD de la Pixhawk en la carpeta de tu script.
-2. Modifica la variable `log_file` en `processVibe.py` apuntando a tu archivo de log (ej. `log_file = '00000009.BIN'`).
-3. Ejecuta el script:
-   ```bash
-   python 12_Codigos_Graficas/processVibe.py
-   ```
-4. Se generará una gráfica llamada `grafica_vibraciones_apa.png` mostrando la respuesta dinámica de aceleración inercial en $m/s^2$ (umbral seguro Pixhawk: $<30\text{ m/s}^2$).
+# Terminal 2 — cuando SITL reporte heartbeat
+python3 examples/yoy_trainer/scripts/autonomous_flight.py --loiter-now --duration 300
+```
 
 ---
 
-##  Componentes de la Plataforma Reno L250 (Auto)
-* **Controlador de Vuelo**: Pixhawk 2.4.8 (Firmware ArduPlane)
-* **Módulo GNSS**: NEO-M8N GPS con brújula magnetómetro externa
-* **Motor Brushless**: KingVal 3548 1100KV (Conversión eléctrica)
-* **ESC (Speed Controller)**: Flycolor 60A ESC (3-6S Lipo)
-* **Hélice**: 12x6 pulgadas de madera/nylon
-* **Servomotores**: MG996R con engranajes metálicos de torque alto (3 unidades)
-* **Batería**: LiPo 3S 2200 mAh (11.1 V)
-* **Radiocontrol**: Transmisor Flysky FS-i6X y receptor FS-iA10B (2.4 GHz, 10 Canales)
-* **Módulo de Poder (PMU)**: Sensor de corriente y regulador de voltaje 5.3V BEC
+## Datos que no están en este repositorio
+
+Los registros `.BIN` completos de Mission Planner **no se versionan aquí**: son
+demasiado pesados para GitHub, que avisa a partir de 50 MB por archivo y
+rechaza los que superan 100 MB.
+
+Lo que sí está publicado son los productos derivados que respaldan las figuras
+del artículo: las gráficas de vibraciones y de latencia en
+`12_Codigos_Graficas/`, y los CSV de telemetría en `Datos_Articulo/`. Los
+scripts de esa misma carpeta regeneran las figuras a partir de esos datos.
+
+Si necesitas los `.BIN` originales, escríbenos al correo de contacto del
+artículo.
+
+---
+
+## Requisitos
+
+Para los scripts de análisis de telemetría:
+
+```bash
+pip install pymavlink matplotlib numpy pandas
+```
+
+Para abrir el CAD: SolidWorks 2021+ o Autodesk Inventor 2021+ para los archivos
+nativos; cualquier visor compatible con STEP para el resto.
+
+---
+
+## Cómo citar
+
+Si este material te resulta útil, cita el artículo:
+
+```bibtex
+@inproceedings{martinez2026openuav,
+  author    = {Martinez, Steven and Veloz, Joel and Hurel, Jorge and
+               Tutiven, Christian and Yumbla, Francisco},
+  title     = {Integration and Validation of Open-Source Fixed-Wing {UAV}
+               Platforms for Low-Cost Autonomous Flight Research},
+  booktitle = {IEEE Ecuador Technical Chapters Meeting (ETCM)},
+  year      = {2026}
+}
+```
+
+---
+
+## Contacto
+
+Facultad de Ingeniería en Mecánica y Ciencias de la Producción
+Escuela Superior Politécnica del Litoral (ESPOL)
+Campus Gustavo Galindo, Guayaquil, Ecuador — `fryumbla@espol.edu.ec`
